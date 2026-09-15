@@ -60,3 +60,18 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# xcuitest-agentic
+#
+# The target-app clone used for the bundled demo is fetched by
+# scripts/setup-demo-app.sh, never committed.
+.demo-app/
+
+# HostRunner/project.yml is the source of truth (xcodegen). The generated
+# .xcodeproj is reproducible from it via `xcodegen generate` and is not
+# committed, avoiding pbxproj merge conflicts.
+HostRunner/*.xcodeproj/
+
+DerivedData/
+*.xcresult
+.swiftpm/

@@ -1,0 +1,51 @@
+name: XCUITestAgenticHost
+options:
+  bundleIdPrefix: com.autom8ion.xcuitest-agentic
+  deploymentTarget:
+    iOS: "16.0"
+configs:
+  Debug: debug
+  Release: release
+packages:
+  XCUITestAgentic:
+    path: ..
+targets:
+  XCUITestAgenticHost:
+    type: application
+    platform: iOS
+    sources:
+      - path: Host
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.autom8ion.xcuitest-agentic.host
+        GENERATE_INFOPLIST_FILE: true
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGNING_REQUIRED: false
+        CODE_SIGNING_ALLOWED: false
+
+  XCUITestAgenticUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: ../Examples
+    dependencies:
+      - target: XCUITestAgenticHost
+      - package: XCUITestAgentic
+        product: XCUITestAgenticCore
+      - package: XCUITestAgentic
+        product: ScreenObject
+      - package: XCUITestAgentic
+        product: ScreenAssertions
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.autom8ion.xcuitest-agentic.uitests
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGNING_REQUIRED: false
+        CODE_SIGNING_ALLOWED: false
+    scheme:
+      testTargets:
+        - name: XCUITestAgenticUITests
+          parallelizable: false
+      environmentVariables:
+        XCUITEST_AGENTIC_CONFIG_DIR: $(SRCROOT)/../config
+        TEST_ENV: local

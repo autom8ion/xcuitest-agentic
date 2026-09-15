@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-framework:
+    name: Build framework package
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: swift build
+        run: swift build
+
+  smoke-tests:
+    name: Smoke UI tests
+    runs-on: macos-15
+    needs: build-framework
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate host Xcode project
+        run: cd HostRunner && xcodegen generate
+
+      - name: Set up demo app
+        run: ./scripts/setup-demo-app.sh
+        env:
+          DEVICE_NAME: iPhone 16
+
+      - name: Run smoke tests
+        run: |
+          xcodebuild test \
+            -project HostRunner/XCUITestAgenticHost.xcodeproj \
+            -scheme XCUITestAgenticUITests \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -resultBundlePath TestResults.xcresult \
+            -only-testing:XCUITestAgenticUITests/LoginTests \
+            -only-testing:XCUITestAgenticUITests/CatalogAndCartTests
+
+      - name: Upload .xcresult
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-results
+          path: TestResults.xcresult
+
+  full-suite:
+    name: Full example suite
+    runs-on: macos-15
+    needs: build-framework
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate host Xcode project
+        run: cd HostRunner && xcodegen generate
+
+      - name: Set up demo app
+        run: ./scripts/setup-demo-app.sh
+        env:
+          DEVICE_NAME: iPhone 16
+
+      - name: Run full example suite
+        run: |
+          xcodebuild test \
+            -project HostRunner/XCUITestAgenticHost.xcodeproj \
+            -scheme XCUITestAgenticUITests \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -resultBundlePath TestResults.xcresult
+
+      - name: Upload .xcresult
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-suite-results
+          path: TestResults.xcresult

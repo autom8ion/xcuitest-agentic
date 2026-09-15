@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(swift build*)",
+      "Bash(swift test*)",
+      "Bash(xcodebuild *)",
+      "Bash(xcrun simctl *)",
+      "Bash(xcodegen *)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(scripts/setup-demo-app.sh*)",
+      "Read(//Users/**)"
+    ],
+    "deny": [
+      "Bash(git push*)",
+      "Bash(git reset --hard*)",
+      "Bash(rm -rf*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/enforce_constitution.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/post_write_check.py"
+          }
+        ]
+      }
+    ]
+  }
+}

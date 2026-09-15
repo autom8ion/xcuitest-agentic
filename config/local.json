@@ -1,0 +1,7 @@
+{
+  "bundleIdentifier": "com.saucelabs.mydemo.app.ios",
+  "appPath": ".demo-app/DerivedData/Build/Products/Debug-iphonesimulator/My Demo App.app",
+  "deviceName": "iPhone 16",
+  "launchArguments": [],
+  "launchEnvironment": {}
+}
